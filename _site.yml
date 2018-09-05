@@ -5,8 +5,12 @@ navbar:
   left:
     - text: "Home"
       href: index.html
+    - text: "Code"
+      href: clean_shape.html
     - text: "License"
       href: license.html
+    - text: "davidhen.com"
+      href: https://www.davidhen.com/
   right:
     - icon: fa-github
       href: https://github.com/davidhen/clean_shapefile_scotland_LA
