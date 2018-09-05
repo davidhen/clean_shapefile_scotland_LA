@@ -180,11 +180,11 @@ scot_plot <-
   geom_sf() +
   theme(line = element_blank(),
         axis.text = element_blank(),
-        panel.grid = element_line(colour = "transparent")) +
+        panel.grid = element_line(colour = "transparent"),
+        plot.caption = element_text(size = 10, colour = "#AAAAAA")) +
   labs(title = "Scotland",
        subtitle = "shown with local authority administrative areas",
-       caption = "Contains National Statistics data © Crown copyright and database right 2018\nContains OS data © Crown copyright and database right 2018") +
-  theme(plot.caption = element_text(size = 10, colour = "#AAAAAA"))
+       caption = "Contains National Statistics data © Crown copyright and database right 2018\nContains OS data © Crown copyright and database right 2018") 
 scot_plot
 ```
 

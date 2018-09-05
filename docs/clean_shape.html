@@ -302,6 +302,9 @@ div.tocify {
 <li>
   <a href="license.html">License</a>
 </li>
+<li>
+  <a href="https://www.davidhen.com/">davidhen.com</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -515,11 +518,11 @@ argyll &lt;-
   geom_sf() +
   theme(line = element_blank(),
         axis.text = element_blank(),
-        panel.grid = element_line(colour = &quot;transparent&quot;)) +
+        panel.grid = element_line(colour = &quot;transparent&quot;),
+        plot.caption = element_text(size = 10, colour = &quot;#AAAAAA&quot;)) +
   labs(title = &quot;Scotland&quot;,
        subtitle = &quot;shown with local authority administrative areas&quot;,
-       caption = &quot;Contains National Statistics data © Crown copyright and database right 2018\nContains OS data © Crown copyright and database right 2018&quot;) +
-  theme(plot.caption = element_text(size = 10, colour = &quot;#AAAAAA&quot;))
+       caption = &quot;Contains National Statistics data © Crown copyright and database right 2018\nContains OS data © Crown copyright and database right 2018&quot;) 
 scot_plot</code></pre>
 <p><img src="clean_shape_files/figure-html/plot-1.png" width="864" /></p>
 </div>
