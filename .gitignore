@@ -3,6 +3,7 @@
 .RData
 .Ruserdata
 raw_data/
-docs/assets/
+docs/assets/clean_data
 docs/clean_shape_files/
 docs/raw_data/
+README.md
