@@ -28,6 +28,7 @@ Firstly I'll load the required packages, some plot settings, and set the working
 library(tidyverse)
 library(sf)
 library(readxl)
+library(extrafont)
 theme_set(theme_minimal(base_size = 16, base_family = "Roboto"))
 library(here)
 here()
@@ -93,7 +94,7 @@ scotland_la
 
 ##Alternative names
 
-One of the most annoying things about working with public data is the differing nomenclature that can be used for Local Authorities. As you can see above, I already had to change the name of "Na h-Eileanan an Iar" to "Na h-Eileanan Siar" so it could be joined to the shapefile[^1]. I have seen a third variation of this also. Furthermore, some offcial statistics are published with "Edinburgh, City of" as oppposed to what you can see in the table above. Through in variaions with "&" and "and" and you can see the picture starts to become messy!
+One of the most annoying things about working with public data is the differing nomenclature that can be used for Local Authorities. As you can see above, I already had to change the name of "Na h-Eileanan an Iar" to "Na h-Eileanan Siar" so it could be joined to the shapefile[^1]. I have seen a third variation of this also. Furthermore, some offcial statistics are published with "Edinburgh, City of" as oppposed to what you can see in the table above. Throw in variaions with "&" and "and" and you can see the picture starts to become messy!
 
 What I want to do is add rows with as many of these combination I can think of and copy the geometry from version that is in the shapefile. This way I *should* be able to `left_join` any dataset without having to rename indiviudal Local Authority names.
 
@@ -172,16 +173,26 @@ rm(list = c("argyll", "dumfries", "edinburgh", "eilean_siar",
 
 And, at last, I can plot a blank map to see that it looks ok.
 
-```{r plot}
-scotland_la %>% 
+```{r plot, fig.width=9, fig.height=9}
+scot_plot <-
+  scotland_la %>% 
   ggplot() +
   geom_sf() +
   theme(line = element_blank(),
         axis.text = element_blank(),
         panel.grid = element_line(colour = "transparent")) +
-  labs(caption = "Contains National Statistics data © Crown copyright and database right 2018\nContains OS data © Crown copyright and database right 2018") +
+  labs(title = "Scotland",
+       subtitle = "shown with local authority administrative areas",
+       caption = "Contains National Statistics data © Crown copyright and database right 2018\nContains OS data © Crown copyright and database right 2018") +
   theme(plot.caption = element_text(size = 10, colour = "#AAAAAA"))
+scot_plot
 ```
+
+```{r save_plot, echo=FALSE, eval=FALSE}
+ggsave("assets/plots/scot_plot.png", scot_plot, 
+       height = 9, width = 9, dpi = 600)
+```
+
 
 #Save
 
@@ -191,3 +202,8 @@ I now have the object I wanted: `scotland_la` . I'll save this as a `.rds` objec
 save(scotland_la, file = here("assets/clean_data/scotland_la.rds"))
 ```
 
+#Session info
+
+```{r session_info, cache=FALSE}
+devtools::session_info()
+```

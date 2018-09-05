@@ -1,12 +1,19 @@
 ---
 title: "Home"
+output:
+  html_document:
+    toc: false
+    theme: spacelab
 ---
 
-Code and materials for the Hackathon held in Banff, Canada at IPDLN 2018
+![](assets/plots/scot_plot.png)
 
-* [Data Cleaning](clean_shape.html)
-* Next file
+##Intro
 
+A quick cleaning of a shapefile that *should* be able to be used very quickly with any dataset at Local authority level. 
 
+A walkthrough of the code can be viewed [here](clean_shape.html)
 
-**add partials for footer and session info** see https://rmarkdown.rstudio.com/rmarkdown_websites.htm#rmd_partials
+The saved `sf` object `scotland_la.rds` is in my GitHub repo [here](https://github.com/davidhen/clean_shapefile_scotland_LA/tree/master/assets/clean_data). Feel free to clone the repo and use the dataframe for mapping Scottish Local Authorities. 
+
+Check out [my homepage](https://www.davidhen.com/) for more projects, publications, and talks. 
