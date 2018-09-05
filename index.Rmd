@@ -1,0 +1,12 @@
+---
+title: "Home"
+---
+
+Code and materials for the Hackathon held in Banff, Canada at IPDLN 2018
+
+* [Data Cleaning](clean_shape.html)
+* Next file
+
+
+
+**add partials for footer and session info** see https://rmarkdown.rstudio.com/rmarkdown_websites.htm#rmd_partials

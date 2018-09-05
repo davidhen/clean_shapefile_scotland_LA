@@ -1,0 +1,22 @@
+name: "Local Authority shape file wrangling"
+output_dir: "docs"
+navbar:
+  title: "Cleaning a shapefile for Scottish Local Authorities"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "License"
+      href: license.html
+  right:
+    - icon: fa-github
+      href: https://github.com/davidhen/clean_shapefile_scotland_LA
+    - icon: fa-twitter
+      href: https://twitter.com/_davidhen
+output:
+  html_document:
+    theme: spacelab
+    toc: true
+    toc_float: true
+    code_folding: hide
+    df_print: paged
+

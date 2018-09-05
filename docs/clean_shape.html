@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="David Henderson" />
+
+
+<title>Clean Scottish LA shapefile</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/spacelab.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-5.0.13/css/fa-svg-with-js.css" rel="stylesheet" />
+<script src="site_libs/font-awesome-5.0.13/js/fontawesome-all.min.js"></script>
+<script src="site_libs/font-awesome-5.0.13/js/fa-v4-shims.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 52px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 57px;
+  margin-top: -57px;
+}
+
+.section h2 {
+  padding-top: 57px;
+  margin-top: -57px;
+}
+.section h3 {
+  padding-top: 57px;
+  margin-top: -57px;
+}
+.section h4 {
+  padding-top: 57px;
+  margin-top: -57px;
+}
+.section h5 {
+  padding-top: 57px;
+  margin-top: -57px;
+}
+.section h6 {
+  padding-top: 57px;
+  margin-top: -57px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Cleaning a shapefile for Scottish Local Authorities</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/davidhen/clean_shapefile_scotland_LA">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/_davidhen">
+    <span class="fa fa-twitter"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Clean Scottish LA shapefile</h1>
+<h4 class="author"><em>David Henderson</em></h4>
+<h4 class="date"><em>5 September 2018</em></h4>
+
+</div>
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>I want to create an R object (<code>scotland_la.rds</code>) that is a shapefile that I can easily load into any analysis and join to datasets at Scotland Local Authority level.</p>
+<p>Effictively all I am doing here is taking the data cleaning phase of the shapefile out of the equation so I can create maps a little quicker in future.</p>
+<p>I’ve downloaded the shapefile from the ONS geoportal from <a href="http://geoportal.statistics.gov.uk/datasets/local-authority-districts-december-2017-full-clipped-boundaries-in-united-kingdom-wgs84">this link</a>. It is a big file so will not be pushing it to Github.</p>
+<p>The file includes all UK Local Authority data so the main thing is trimming it down to Scotland level.</p>
+<p>I’ve also downloaded the “Data zone to intermediate zone, local authority, health board….” excel file from <a href="https://www.gov.scot/Topics/Statistics/SIMD">this link</a> to use as a lookup for local authority names.</p>
+<div id="packages" class="section level2">
+<h2>Packages</h2>
+<p>Firstly I’ll load the required packages, some plot settings, and set the working directory using <code>here()</code></p>
+<pre class="r"><code>library(tidyverse)
+library(sf)
+library(readxl)
+theme_set(theme_minimal(base_size = 16, base_family = &quot;Roboto&quot;))
+library(here)
+here()</code></pre>
+<pre><code>## [1] &quot;C:/GitHub/clean_shapefile_scotland_LA&quot;</code></pre>
+</div>
+<div id="load-data" class="section level2">
+<h2>Load data</h2>
+<p>Now I’ll import the shapefile and the lookup data</p>
+<pre class="r"><code>scotland_la &lt;- st_read(here(&quot;raw_data/shapefiles/Local_Authority_Districts_December_2017_Full_Clipped_Boundaries_in_United_Kingdom_WGS84.shp&quot;))</code></pre>
+<pre><code>## Reading layer `Local_Authority_Districts_December_2017_Full_Clipped_Boundaries_in_United_Kingdom_WGS84&#39; from data source `C:\GitHub\clean_shapefile_scotland_LA\raw_data\shapefiles\Local_Authority_Districts_December_2017_Full_Clipped_Boundaries_in_United_Kingdom_WGS84.shp&#39; using driver `ESRI Shapefile&#39;
+## Simple feature collection with 391 features and 10 fields
+## geometry type:  MULTIPOLYGON
+## dimension:      XY
+## bbox:           xmin: -163.4997 ymin: 5410.413 xmax: 655515.6 ymax: 1220231
+## epsg (SRID):    NA
+## proj4string:    +proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +datum=OSGB36 +units=m +no_defs</code></pre>
+<pre class="r"><code>la_lookup &lt;- read_xlsx(path = here(&quot;raw_data/00534447.xlsx&quot;),
+                       sheet = &quot;SIMD16 DZ look-up data&quot;) </code></pre>
+</div>
+</div>
+<div id="data-wrangle" class="section level1">
+<h1>Data wrangle</h1>
+<p>I need to clean up both files a little bit.</p>
+<div id="local-authority-lookup" class="section level2">
+<h2>Local authority lookup</h2>
+<p>Starting with the <code>la_lookup</code> object</p>
+<pre class="r"><code>glimpse(la_lookup)</code></pre>
+<pre><code>## Observations: 6,976
+## Variables: 27
+## $ DZ                             &lt;chr&gt; &quot;S01006506&quot;, &quot;S01006507&quot;, &quot;S010...
+## $ DZname                         &lt;chr&gt; &quot;Culter - 01&quot;, &quot;Culter - 02&quot;, &quot;...
+## $ SIMD16_Rank                    &lt;dbl&gt; 5272, 4838, 6321, 5363, 4049, 6...
+## $ SIMD16_Vigintile               &lt;dbl&gt; 16, 14, 19, 16, 12, 20, 17, 17,...
+## $ SIMD16_Decile                  &lt;dbl&gt; 8, 7, 10, 8, 6, 10, 9, 9, 10, 1...
+## $ SIMD16_Quintile                &lt;dbl&gt; 4, 4, 5, 4, 3, 5, 5, 5, 5, 5, 5...
+## $ SIMD16_Employment_Domain_Rank  &lt;dbl&gt; 4260, 4830, 6101, 4599, 4055, 6...
+## $ SIMD16_Income_Domain_Rank      &lt;dbl&gt; 4513, 4334, 5266, 5002, 3341, 5...
+## $ SIMD16_Education_Domain_Rank   &lt;dbl&gt; 5367, 4017, 6032, 4914, 3509, 5...
+## $ SIMD16_Health_Domain_Rank      &lt;dbl&gt; 4906, 5070, 5837, 3958, 3028, 5...
+## $ SIMD16_Access_Domain_Rank      &lt;dbl&gt; 5065, 2222, 3596, 4553, 5681, 5...
+## $ SIMD16_Crime_Domain_Rank       &lt;dbl&gt; 5519.0, 6310.0, 6134.0, 6934.5,...
+## $ SIMD16_Housing_Domain_Rank     &lt;dbl&gt; 3248.0, 3486.0, 5342.0, 4394.5,...
+## $ Population                     &lt;dbl&gt; 904, 830, 694, 573, 676, 781, 5...
+## $ Working_Age_Population_revised &lt;dbl&gt; 605, 491, 519, 354, 414, 464, 3...
+## $ URclass                        &lt;dbl&gt; 3, 3, 3, 3, 3, 3, 5, 3, 3, 3, 3...
+## $ URname                         &lt;chr&gt; &quot;Accessible Small Towns&quot;, &quot;Acce...
+## $ IZcode                         &lt;chr&gt; &quot;S02001236&quot;, &quot;S02001236&quot;, &quot;S020...
+## $ IZname                         &lt;chr&gt; &quot;Culter&quot;, &quot;Culter&quot;, &quot;Culter&quot;, &quot;...
+## $ LAcode                         &lt;chr&gt; &quot;S12000033&quot;, &quot;S12000033&quot;, &quot;S120...
+## $ LAname                         &lt;chr&gt; &quot;Aberdeen City&quot;, &quot;Aberdeen City...
+## $ HBcode                         &lt;chr&gt; &quot;S08000020&quot;, &quot;S08000020&quot;, &quot;S080...
+## $ HBname                         &lt;chr&gt; &quot;Grampian&quot;, &quot;Grampian&quot;, &quot;Grampi...
+## $ MMWcode                        &lt;chr&gt; &quot;S13002484&quot;, &quot;S13002484&quot;, &quot;S130...
+## $ MMWname                        &lt;chr&gt; &quot;Lower Deeside Ward&quot;, &quot;Lower De...
+## $ SPCcode                        &lt;chr&gt; &quot;S16000076&quot;, &quot;S16000076&quot;, &quot;S160...
+## $ SPCname                        &lt;chr&gt; &quot;Aberdeen South and North Kinca...</code></pre>
+<p>I only need a fraction of this</p>
+<pre class="r"><code>la_lookup %&lt;&gt;% 
+  select(LAname) %&gt;% #Keep only the LAname variable
+  distinct #Keep unique names 
+
+#Change Western Isles nomenclature to match the shapefile
+la_lookup$LAname &lt;- str_replace(la_lookup$LAname, &quot;Na h-Eileanan an Iar&quot;, &quot;Na h-Eileanan Siar&quot;)
+
+la_lookup</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["LAname"],"name":[1],"type":["chr"],"align":["left"]}],"data":[{"1":"Aberdeen City"},{"1":"Aberdeenshire"},{"1":"Angus"},{"1":"Argyll and Bute"},{"1":"Clackmannanshire"},{"1":"Dumfries and Galloway"},{"1":"Dundee City"},{"1":"East Ayrshire"},{"1":"East Dunbartonshire"},{"1":"East Lothian"},{"1":"East Renfrewshire"},{"1":"City of Edinburgh"},{"1":"Na h-Eileanan Siar"},{"1":"Falkirk"},{"1":"Fife"},{"1":"Glasgow City"},{"1":"Highland"},{"1":"Inverclyde"},{"1":"Midlothian"},{"1":"Moray"},{"1":"North Ayrshire"},{"1":"North Lanarkshire"},{"1":"Orkney Islands"},{"1":"Perth and Kinross"},{"1":"Renfrewshire"},{"1":"Scottish Borders"},{"1":"Shetland Islands"},{"1":"South Ayrshire"},{"1":"South Lanarkshire"},{"1":"Stirling"},{"1":"West Dunbartonshire"},{"1":"West Lothian"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="shape-file" class="section level2">
+<h2>Shape file</h2>
+<p>The shape file has every local authority in the UK - I just want Scottish Local Authorities. Here I also rename the variable <code>lad17nm</code> to <code>council</code>. This is the variable name I tend to use for Local Authorites in my anlayses and so when I join other datasets to the shapefile it will be “by” this variable.</p>
+<p>The shapefile imported factor labels for the <code>council</code> and <code>lad17cd</code> variables - sometimes over 200 levels (as the LA names can be associated with datazone or lower output area codes as well). For now I am going to convert these to character variables as I don’t need these labels and it could cause problems with differing datasets.</p>
+<pre class="r"><code>scotland_la %&lt;&gt;%
+  filter(lad17nm %in% la_lookup$LAname) %&gt;% #keep Scot LAs only 
+  rename(council = lad17nm) %&gt;%  #rename what will be the &quot;joining&quot; variable to &quot;council&quot;
+  select(lad17cd, council, geometry) %&gt;% #drop unneeded variables
+  map_at(c(1,2), as.character) %&gt;% #coerce factor variables to character
+  as_data_frame() #coerce the whole object to a data_frame</code></pre>
+<pre><code>## Warning in out[sel] &lt;- map(.x[sel], .f, ...): number of items to replace is
+## not a multiple of replacement length</code></pre>
+<p>A quick look at where we are now…</p>
+<pre class="r"><code>scotland_la</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["lad17cd"],"name":[1],"type":["chr"],"align":["left"]},{"label":["council"],"name":[2],"type":["chr"],"align":["left"]},{"label":["geometry"],"name":[3],"type":["S3: sfc_MULTIPOLYGON"],"align":["right"]}],"data":[{"1":"S12000005","2":"Clackmannanshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000006","2":"Dumfries and Galloway","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000008","2":"East Ayrshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000010","2":"East Lothian","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000011","2":"East Renfrewshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000013","2":"Na h-Eileanan Siar","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000014","2":"Falkirk","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000015","2":"Fife","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000017","2":"Highland","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000018","2":"Inverclyde","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000019","2":"Midlothian","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000020","2":"Moray","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000021","2":"North Ayrshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000023","2":"Orkney Islands","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000024","2":"Perth and Kinross","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000026","2":"Scottish Borders","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000027","2":"Shetland Islands","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000028","2":"South Ayrshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000029","2":"South Lanarkshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000030","2":"Stirling","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000033","2":"Aberdeen City","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000034","2":"Aberdeenshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000035","2":"Argyll and Bute","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000036","2":"City of Edinburgh","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000038","2":"Renfrewshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000039","2":"West Dunbartonshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000040","2":"West Lothian","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000041","2":"Angus","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000042","2":"Dundee City","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000044","2":"North Lanarkshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000045","2":"East Dunbartonshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000046","2":"Glasgow City","3":"<S3: sfc_MULTIPOLYGON>"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="alternative-names" class="section level2">
+<h2>Alternative names</h2>
+<p>One of the most annoying things about working with public data is the differing nomenclature that can be used for Local Authorities. As you can see above, I already had to change the name of “Na h-Eileanan an Iar” to “Na h-Eileanan Siar” so it could be joined to the shapefile<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>. I have seen a third variation of this also. Furthermore, some offcial statistics are published with “Edinburgh, City of” as oppposed to what you can see in the table above. Through in variaions with “&amp;” and “and” and you can see the picture starts to become messy!</p>
+<p>What I want to do is add rows with as many of these combination I can think of and copy the geometry from version that is in the shapefile. This way I <em>should</em> be able to <code>left_join</code> any dataset without having to rename indiviudal Local Authority names.</p>
+<p>The <code>geometry</code> variable in <code>scotland_la</code> has a large list for every council with all the data required to draw the map. Duplicating is a little tricky but what I am going to do is extract the geometry for the councils that I am going to add additional variables for…</p>
+<pre class="r"><code>eilean_siar &lt;- 
+  scotland_la %&gt;% 
+  filter(council == &quot;Na h-Eileanan Siar&quot;) %&gt;% 
+  .$geometry
+
+edinburgh &lt;- 
+  scotland_la %&gt;% 
+  filter(council == &quot;City of Edinburgh&quot;) %&gt;% 
+  .$geometry
+
+dumfries &lt;- 
+  scotland_la %&gt;% 
+  filter(council == &quot;Dumfries and Galloway&quot;) %&gt;% 
+  .$geometry
+
+perth &lt;-
+  scotland_la %&gt;% 
+  filter(council == &quot;Perth and Kinross&quot;) %&gt;% 
+  .$geometry
+
+argyll &lt;- 
+  scotland_la %&gt;% 
+  filter(council == &quot;Argyll and Bute&quot;) %&gt;% 
+  .$geometry</code></pre>
+<p>…now I can simply add rows to the dataframe with alternative names and plug in the extracted geometry variables where needed. Because all this wrangling has converted the <code>scotland_la</code> object to a <code>data_frame</code> under the hood, the last line in this chunk of code coerces it back to an <code>sf</code> object that can be mapped.</p>
+<pre class="r"><code>scotland_la %&lt;&gt;% 
+  as_data_frame() %&gt;% 
+  add_row(lad17cd = &quot;S12000013&quot;, 
+          council = &quot;Na h-Eileanan an Iar&quot;,
+          geometry = eilean_siar) %&gt;%
+  add_row(lad17cd = &quot;S12000013&quot;, 
+          council = &quot;Eilean Siar&quot;,
+          geometry = eilean_siar) %&gt;%
+  add_row(lad17cd = &quot;S12000036&quot;,
+          council = &quot;Edinburgh, City of&quot;,
+          geometry = edinburgh) %&gt;% 
+  add_row(lad17cd = &quot;S12000006&quot;,
+          council = &quot;Dumfries &amp; Galloway&quot;,
+          geometry = dumfries) %&gt;% 
+  add_row(lad17cd = &quot;S12000024&quot;,
+          council = &quot;Perth &amp; Kinross&quot;,
+          geometry = perth) %&gt;% 
+  add_row(lad17cd = &quot;S12000035&quot;,
+          council = &quot;Argyll &amp; Bute&quot;,
+          geometry = argyll) %&gt;% 
+  arrange(lad17cd) %&gt;% 
+  st_as_sf()</code></pre>
+<p>Just a quick check that this has worked.</p>
+<pre class="r"><code>scotland_la</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["lad17cd"],"name":[1],"type":["chr"],"align":["left"]},{"label":["council"],"name":[2],"type":["chr"],"align":["left"]},{"label":["geometry"],"name":[3],"type":["S3: sfc_MULTIPOLYGON"],"align":["right"]}],"data":[{"1":"S12000005","2":"Clackmannanshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000006","2":"Dumfries and Galloway","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000006","2":"Dumfries & Galloway","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000008","2":"East Ayrshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000010","2":"East Lothian","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000011","2":"East Renfrewshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000013","2":"Na h-Eileanan Siar","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000013","2":"Na h-Eileanan an Iar","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000013","2":"Eilean Siar","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000014","2":"Falkirk","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000015","2":"Fife","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000017","2":"Highland","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000018","2":"Inverclyde","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000019","2":"Midlothian","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000020","2":"Moray","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000021","2":"North Ayrshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000023","2":"Orkney Islands","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000024","2":"Perth and Kinross","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000024","2":"Perth & Kinross","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000026","2":"Scottish Borders","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000027","2":"Shetland Islands","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000028","2":"South Ayrshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000029","2":"South Lanarkshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000030","2":"Stirling","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000033","2":"Aberdeen City","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000034","2":"Aberdeenshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000035","2":"Argyll and Bute","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000035","2":"Argyll & Bute","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000036","2":"City of Edinburgh","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000036","2":"Edinburgh, City of","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000038","2":"Renfrewshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000039","2":"West Dunbartonshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000040","2":"West Lothian","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000041","2":"Angus","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000042","2":"Dundee City","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000044","2":"North Lanarkshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000045","2":"East Dunbartonshire","3":"<S3: sfc_MULTIPOLYGON>"},{"1":"S12000046","2":"Glasgow City","3":"<S3: sfc_MULTIPOLYGON>"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<div id="plot" class="section level1">
+<h1>Plot</h1>
+<p>And, at last, I can plot a blank map to see that it looks ok.</p>
+<pre class="r"><code>scotland_la %&gt;% 
+  ggplot() +
+  geom_sf() +
+  theme(line = element_blank(),
+        axis.text = element_blank(),
+        panel.grid = element_line(colour = &quot;transparent&quot;)) +
+  labs(caption = &quot;Contains National Statistics data © Crown copyright and database right 2018\nContains OS data © Crown copyright and database right 2018&quot;) +
+  theme(plot.caption = element_text(size = 10, colour = &quot;#AAAAAA&quot;))</code></pre>
+<pre><code>## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, :
+## font family not found in Windows font database</code></pre>
+<p><img src="clean_shape_files/figure-html/plot-1.png" width="672" /></p>
+</div>
+<div id="save" class="section level1">
+<h1>Save</h1>
+<p>I now have the object I wanted: <code>scotland_la</code> . I’ll save this as a <code>.rds</code> object which can be imported to any r session with the code <code>load(&quot;/path_to_file/scotland_la.rds&quot;)</code></p>
+<pre class="r"><code>save(scotland_la, file = here(&quot;assets/clean_data/scotland_la.rds&quot;))</code></pre>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>My wife’s first language is Scottish Gaelic and she assures me “Na h-Eileanan an Iar” is the grammatically correct way to pronounce “The Western Isles”, however somewhere in government “Na h-Eileanan Siar” has been deemed to be the offical spelling!<a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
