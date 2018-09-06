@@ -1,3 +1,5 @@
 source("functions/make_reports.R")
 
-report("clean_shape.Rmd")
+report("index.Rmd")
+report("license.Rmd")
+report("rmds/clean_shape.Rmd")
